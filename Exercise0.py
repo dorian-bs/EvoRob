@@ -30,7 +30,7 @@ class AckleyWorld(World):
         x, y = genotype
         return np.array([x, y])
 
-    def evaluate_individual(self, genotype):
+    def evaluate_individual(self, genotype):        
         x, y = self.geno2pheno(genotype)
         fitness = f_reversed_ackley(x, y)
         return fitness
@@ -82,22 +82,23 @@ def main():
 
     #%% Change the World
     #TODO: Implement your world
-    myworld = MyWorld()
-    run_EA(ea, myworld)
+    # myworld = MyWorld()
+    # run_EA(ea, myworld)
 
 
     #%% Change the EA
     #TODO: Change the ea function
-    from src.EA.CMAES import CMAES, CMAES_opts
-    CMAES_opts["min"]= -4
-    CMAES_opts["max"]= 4
-    CMAES_opts["num_generations"]= 100
-    CMAES_opts["mutation_sigma"]= 0.3
-    results_dir = os.path.join(ROOT_DIR, 'results', ENV_NAME, 'CMAES')
-    ea = CMAES(population_size, n_parameters, CMAES_opts, results_dir)
+    # from src.EA.CMAES import CMAES, CMAES_opts
+    # CMAES_opts["min"]= -4
+    # CMAES_opts["max"]= 4
+    # CMAES_opts["num_generations"]= 100
+    # CMAES_opts["mutation_sigma"]= 0.3
+    # results_dir = os.path.join(ROOT_DIR, 'results', ENV_NAME, 'CMAES')
+    # ea = CMAES(population_size, n_parameters, CMAES_opts, results_dir)
 
-    run_EA(ea, myworld)
+    # run_EA(ea, myworld)
 
 
 if __name__ == '__main__':
     main()
+
