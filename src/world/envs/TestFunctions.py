@@ -19,3 +19,22 @@ def f_schaffer1d(x):
     f1 = -np.square(x)
     f2 = -np.square(x-2)
     return f1, f2
+
+def f_custom_benchmark(x, y):
+    """
+    Custom optimization benchmark function.
+
+    :param x: First parameter (float or array-like).
+    :param y: Second parameter (float or array-like).
+    :return: Fitness value(s) for the given input(s).
+    """
+    # Quadratic bowl term
+    bowl_term = (x**2 + y**2)
+
+    # Sinusoidal oscillations
+    oscillation_term = 10 * (np.sin(5 * x) + np.sin(5 * y))
+
+    # Combine terms
+    fitness = bowl_term + oscillation_term
+
+    return fitness

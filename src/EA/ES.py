@@ -34,7 +34,7 @@ class ES:
         self.max = opts["max"]
 
         self.current_gen = 0
-        self.current_mean = self.initialise_x0()  #TODO
+        self.current_mean = self.initialise_x0()  # Initialize the mean vector
         self.current_sigma = opts["mutation_sigma"]
         self.sigma_limit = opts["sigma_limit"]
 
@@ -42,6 +42,7 @@ class ES:
         self.directory_name = output_dir
         self.full_x = []
         self.full_fitness = []
+        self.mean_positions = []  # New attribute to store mean positions
         self.x_best_so_far = None
         self.f_best_so_far = -np.inf
         self.x = None
@@ -62,6 +63,8 @@ class ES:
         self.current_mean = self.update_population_mean(parents_population, parents_fitness)
         self.current_sigma = self.update_sigma()
 
+        # Store the current mean position
+        self.mean_positions.append(self.current_mean)
 
         #% Some bookkeeping
         self.full_fitness.append(function_values)
@@ -175,6 +178,7 @@ class ES:
         os.makedirs(curr_gen_path, exist_ok=True)
         np.save(os.path.join(self.directory_name, 'full_f'), np.array(self.full_fitness))
         np.save(os.path.join(self.directory_name, 'full_x'), np.array(self.full_x))
+        np.save(os.path.join(self.directory_name, 'mean_positions'), np.array(self.mean_positions))  # Save mean positions
         np.save(os.path.join(curr_gen_path, 'f_best'), np.array(self.f_best_so_far))
         np.save(os.path.join(curr_gen_path, 'x_best'), np.array(self.x_best_so_far))
         np.save(os.path.join(curr_gen_path, 'x'), np.array(self.x))
@@ -190,6 +194,7 @@ class ES:
 
         self.full_fitness = np.load(os.path.join(self.directory_name, 'full_f.npy'))
         self.full_x = np.load(os.path.join(self.directory_name, 'full_x.npy'))
+        self.mean_positions = np.load(os.path.join(self.directory_name, 'mean_positions.npy')).tolist()  # Load mean positions
         self.f_best_so_far = np.load(os.path.join(curr_gen_path, 'f_best.npy'))
         self.x_best_so_far = np.load(os.path.join(curr_gen_path, 'x_best.npy'))
         self.x = np.load(os.path.join(curr_gen_path, 'x.npy'))
