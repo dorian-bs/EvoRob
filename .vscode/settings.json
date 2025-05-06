@@ -1,0 +1,5 @@
+{
+    "python.defaultInterpreterPath": "/Users/dorianbesson/Documents/EPFL/EVRobot/EVvenv/bin/python",
+    "python.analysis.typeCheckingMode": "standard",
+    "python.experiments.enabled": false
+}

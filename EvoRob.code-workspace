@@ -1,0 +1,10 @@
+{
+    "folders": [
+        {
+            "path": ".."
+        }
+    ],
+    "settings": {
+        "python.defaultInterpreterPath": "/Users/dorianbesson/Documents/EPFL/EVRobot/EVvenv/bin/python"
+    }
+}
