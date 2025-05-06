@@ -34,7 +34,7 @@ class ES:
         self.max = opts["max"]
 
         self.current_gen = 0
-        self.current_mean = self.initialise_x0()  #TODO
+        self.current_mean = self.initialise_x0()  # Initialize the mean vector
         self.current_sigma = opts["mutation_sigma"]
         self.sigma_limit = opts["sigma_limit"]
 
@@ -42,6 +42,7 @@ class ES:
         self.directory_name = output_dir
         self.full_x = []
         self.full_fitness = []
+        self.mean_positions = []  # New attribute to store mean positions
         self.x_best_so_far = None
         self.f_best_so_far = -np.inf
         self.x = None
@@ -62,6 +63,8 @@ class ES:
         self.current_mean = self.update_population_mean(parents_population, parents_fitness)
         self.current_sigma = self.update_sigma()
 
+        # Store the current mean position
+        self.mean_positions.append(self.current_mean)
 
         #% Some bookkeeping
         self.full_fitness.append(function_values)
@@ -84,47 +87,90 @@ class ES:
             self.save_checkpoint()
         self.current_gen += 1
 
-    def initialise_x0(self,):
-        #TODO
-        mean_vector = ...
+    def initialise_x0(self):
+        """
+        Initializes the starting population for the evolutionary strategy.
+
+        :return: A 2D array where each row is an individual and each column is a parameter.
+        """
+        mean_vector = np.random.uniform(low=self.min, high=self.max, size=(self.n_pop, self.n_params))
         return mean_vector
 
     def generate_mutated_offspring(self, population_size):
-        # TODO
-        population = ...
+        """
+        Generates a mutated offspring population based on the current mean vector and mutation sigma.
+
+        :param population_size: Number of individuals in the population.
+        :return: A 2D array representing the mutated offspring population.
+        """
+        # Duplicate the current mean vector along the population dimension
+        population = np.tile(self.current_mean, (population_size, 1))
 
         # Compute multivariate Gaussian noise
-        mutation = ...
+        mutation = np.random.normal(
+            loc=0.0, scale=1.0, size=(population_size, self.n_params)
+        )
 
-        # Compute offspring
-        mutated_population = ...
+        # Compute offspring by adding noise scaled by the mutation sigma
+        mutated_population = population + self.current_sigma * mutation
 
         return mutated_population
 
     def sort_and_select_parents(self, population, fitness, num_parents):
-        # TODO
-        parent_population = ...
-        parent_fitness = ...
+        """
+        Sorts the population by fitness and selects the top parents.
+
+        :param population: A 2D array representing the population.
+        :param fitness: A 1D array of fitness values corresponding to the population.
+        :param num_parents: Number of parents to select.
+        :return: A tuple of (selected parent population, selected parent fitness).
+        """
+        # Sort indices by fitness in descending order
+        sorted_indices = np.argsort(fitness)[::-1]
+
+        # Select the top parents based on the number of parents
+        sorted_indices = sorted_indices[:num_parents]
+
+        parent_population = population[sorted_indices]
+        parent_fitness = fitness[sorted_indices]
+
         return parent_population, parent_fitness
 
     def update_population_mean(self, parent_population, parent_fitness):
-        # TODO
-        # Normalise parent fitness scores
-        normed_parents_fitness = ...
+        """
+        Updates the mean vector of the population based on the fitness-weighted average of the parents.
 
-        # Compute population weighted to the normed fitness scores
-        weighted_parents_population = ...
+        :param parent_population: A 2D array representing the selected parent population.
+        :param parent_fitness: A 1D array of fitness values corresponding to the parents.
+        :return: The updated mean vector.
+        """
+        # Normalize parent fitness values to be non-negative
+        min_parent_fitness = np.min(parent_fitness)
+        max_parent_fitness = np.max(parent_fitness)
+        normed_parents_fitness = (parent_fitness - min_parent_fitness) / (
+            max_parent_fitness - min_parent_fitness
+        )
 
-        # Calculate the sum of weighted parents population
-        updated_mean_vector = ...
+        # Normalize weights to sum to 1
+        weights = normed_parents_fitness / np.sum(normed_parents_fitness)
+
+        # Compute the weighted average of the parent population
+        updated_mean_vector = np.average(parent_population, axis=0, weights=weights)
 
         return updated_mean_vector
 
     def update_sigma(self):
-        #TODO
-        minimum_sigma = ...
-        sigma = self.current_sigma
-        param_size = self.n_params
+        """
+        Updates the mutation step size (sigma) for the evolutionary strategy.
+        Ensures sigma does not fall below a predefined minimum value.
+        """
+        # Gradually reduce sigma over generations
+        decay_rate = 0.95  # Example decay rate (adjustable)
+        sigma = self.current_sigma * decay_rate
+
+        # Ensure sigma does not fall below the minimum threshold
+        sigma = max(sigma, self.sigma_limit)
+
         return sigma
 
     def save_checkpoint(self):
@@ -132,6 +178,7 @@ class ES:
         os.makedirs(curr_gen_path, exist_ok=True)
         np.save(os.path.join(self.directory_name, 'full_f'), np.array(self.full_fitness))
         np.save(os.path.join(self.directory_name, 'full_x'), np.array(self.full_x))
+        np.save(os.path.join(self.directory_name, 'mean_positions'), np.array(self.mean_positions))  # Save mean positions
         np.save(os.path.join(curr_gen_path, 'f_best'), np.array(self.f_best_so_far))
         np.save(os.path.join(curr_gen_path, 'x_best'), np.array(self.x_best_so_far))
         np.save(os.path.join(curr_gen_path, 'x'), np.array(self.x))
@@ -147,6 +194,7 @@ class ES:
 
         self.full_fitness = np.load(os.path.join(self.directory_name, 'full_f.npy'))
         self.full_x = np.load(os.path.join(self.directory_name, 'full_x.npy'))
+        self.mean_positions = np.load(os.path.join(self.directory_name, 'mean_positions.npy')).tolist()  # Load mean positions
         self.f_best_so_far = np.load(os.path.join(curr_gen_path, 'f_best.npy'))
         self.x_best_so_far = np.load(os.path.join(curr_gen_path, 'x_best.npy'))
         self.x = np.load(os.path.join(curr_gen_path, 'x.npy'))

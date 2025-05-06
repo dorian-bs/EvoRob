@@ -42,7 +42,8 @@ class CMAES():
         lower_bounds = ...  # lower bounds per dimension !! check dimensions
         upper_bounds = ...  # upper bounds per dimension
         cmaes_params = {
-            'popsize': ...,
+            'popsize': self.n_pop,
+            'sigma0': self.current_sigma,
             'bounds': (lower_bounds, upper_bounds),
         }
         return cma.CMAEvolutionStrategy(..., ..., inopts=cmaes_params)

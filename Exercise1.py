@@ -39,7 +39,7 @@ class CheetahWorld(World):
         state_space = self.env.observation_space.shape[0]  # https://gymnasium.farama.org/environments/mujoco/half_cheetah/#observation-space
         self.controller = MLP.NNController(state_space, action_space)
         self.dt = self.env.get_wrapper_attr('dt')
-        self.n_params = ...  # TODO
+        self.n_params = self.controller.n_params
 
     def geno2pheno(self, genotype):
         self.controller.geno2pheno(genotype)
@@ -123,7 +123,7 @@ def main():
     ppo = PPO("MlpPolicy", env, device=torch.device('cpu'))
     trial_time = 50  # seconds in simulation
     n_sim_steps = int(trial_time / world.dt)
-    n_total_steps = ...  # TODO
+    n_total_steps = population_size * CMAES_opts["num_generations"] * n_sim_steps
     ppo.learn(total_timesteps=n_total_steps)
     ppo_controller = PPO_controller(ppo)
 
