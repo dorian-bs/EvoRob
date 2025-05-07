@@ -32,6 +32,7 @@ class CMAES():
         self.directory_name = output_dir
         self.full_x = []
         self.full_fitness = []
+        self.mean_positions = []  # New attribute to store mean positions
         self.x_best_so_far = None
         self.f_best_so_far = -np.inf
         self.x = [None]*self.n_pop
@@ -39,24 +40,26 @@ class CMAES():
 
     def load_cmaes(self):
         #TODO
-        lower_bounds = ...  # lower bounds per dimension !! check dimensions
-        upper_bounds = ...  # upper bounds per dimension
+        lower_bounds = np.full(self.n_params, self.min)  # lower bounds per dimension !! check dimensions
+        upper_bounds = np.full(self.n_params, self.max)  # upper bounds per dimension
         cmaes_params = {
             'popsize': self.n_pop,
-            'sigma0': self.current_sigma,
             'bounds': (lower_bounds, upper_bounds),
         }
-        return cma.CMAEvolutionStrategy(..., ..., inopts=cmaes_params)
+        return cma.CMAEvolutionStrategy(self.current_mean, self.current_sigma, inopts=cmaes_params)
 
     def ask(self):
         #TODO
-        new_population = ...
+        new_population = self.cmaes.ask()
+        new_population = np.clip(new_population, self.min, self.max)
         return new_population
 
     def tell(self, solutions, function_values, save_checkpoint=True):
         #TODO
-        self.cmaes.tell(..., ...)
+        self.cmaes.tell(solutions, -function_values)
 
+        # Update the mean position
+        self.mean_positions.append(self.cmaes.mean)
 
         #% Some bookkeeping
         self.full_fitness.append(function_values)
@@ -81,7 +84,7 @@ class CMAES():
 
     def initialise_x0(self, num_parameters):
         #TODO
-        mean_vector = ...
+        mean_vector = np.random.uniform(self.min, self.max, num_parameters)
         return mean_vector
 
     def save_checkpoint(self):
