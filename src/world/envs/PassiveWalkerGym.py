@@ -142,11 +142,36 @@ class PassiveWalkerEnv(MujocoEnv, utils.EzPickle):
 
         forward_reward = x_velocity * self._forward_reward_weight
 
-        #TODO
-        reward = forward_reward
+        # Improved reward function with multiple components
+        # 1. Forward velocity reward (keep existing)
+        # 2. Penalty for lateral movement (encourage straight walking)
+        # 3. Posture reward (encourage upright position)
+        # 4. Smoothness reward (discourage jerky movements)
+        # 5. Survival bonus (encourage staying alive)
+        
+        lateral_penalty = -0.1 * abs(y_velocity)
+        
+        # Calculate orientation - encourage upright position
+        quat = self.data.qpos[3:7]  # quaternion representing orientation
+        upright_reward = 0.1 * quat[0]  # reward is higher when w component is closer to 1 (upright)
+        
+        # Penalize jerky angular movements
+        angular_velocity = self.data.qvel[3:6]  # angular velocity
+        smoothness_reward = -0.05 * np.sum(np.square(angular_velocity))
+        
+        # Survival bonus
+        survival_reward = 0.1
+        
+        # Combine all reward components
+        reward = forward_reward + lateral_penalty + upright_reward + smoothness_reward + survival_reward
+        
         observation = self._get_obs()
         info = {
             "reward_forward": forward_reward,
+            "reward_lateral": lateral_penalty,
+            "reward_upright": upright_reward,
+            "reward_smoothness": smoothness_reward,
+            "reward_survival": survival_reward,
             "x_position": self.data.qpos[0],
             "y_position": self.data.qpos[1],
             "distance_from_origin": np.linalg.norm(self.data.qpos[0:2], ord=2),

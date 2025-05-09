@@ -73,7 +73,7 @@ class PassiveWalkerWorld(World):
         points, connectivity_mat = self.geno2pheno(genotype)
         robot = PassiveWalkerRobot(points, connectivity_mat, self.joint_limits, verbose=False)
         robot.xml = robot.define_robot()
-        robot.write_xml()
+        robot.write_xml(ROOT_DIR)  # Save XML to the EvoRob folder instead of default locationOOT_DIR)
 
         # % Defining the Robot environment in MuJoCo #TODO
         world = xml.parse(os.path.join(ROOT_DIR, 'src', 'world', 'robot', 'assets', "walker_world.xml"))
@@ -138,7 +138,7 @@ def visualise_individual(genotype):
     points, connectivity_mat = world.geno2pheno(genotype)
     robot = PassiveWalkerRobot(points, connectivity_mat, world.joint_limits, verbose=False)
     robot.xml = robot.define_robot()
-    robot.write_xml()
+    robot.write_xml(ROOT_DIR)  # Save XML to the EvoRob folder instead of default locationOOT_DIR)  # Save XML to the EvoRob folder instead of default location
 
     # % Defining the Robot environment in MuJoCo
     world_xml = xml.parse(os.path.join(ROOT_DIR, 'src', 'world', 'robot', 'assets', "walker_world.xml"))
@@ -179,10 +179,10 @@ def main():
     results_dir = os.path.join(ROOT_DIR, 'results', ENV_NAME, 'CMAES')
 
     CMAES_opts["min"] = 0
-    CMAES_opts["max"] = 0.5
-    CMAES_opts["num_parents"] = 100
-    CMAES_opts["num_generations"] = 100
-    CMAES_opts["mutation_sigma"] = 0.33
+    CMAES_opts["max"] = 3
+    CMAES_opts["num_parents"] = 20
+    CMAES_opts["num_generations"] = 40
+    CMAES_opts["mutation_sigma"] = 10
 
     population_size = 100
 
@@ -214,3 +214,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+# %%

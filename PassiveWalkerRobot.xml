@@ -8,55 +8,55 @@
         </default>
     </default>
     <worldbody>
-        <body name="Base" pos="0.0 0.0 0.5115">
+        <body name="Base" pos="0.0 0.0 5.9909810726238355">
             <joint type="free"/>
             <geom type="sphere" rgba="0.75 0.75 0.75 1.0" size="0.05" mass="0.02"/>
-            <body name="rod_0.1" pos="0.0 -0.05 -0.15">
-                <geom name="geom_0.1" type="capsule" fromto="-0.0 -0.0 0.15 0.0 0.0 -0.15" size="0.01" rgba="0.75 0.75 0.75 1.0" density="159.15494309189535"/>
+            <body name="rod_0.1" pos="0.0 -0.05 -1.493559636811174">
+                <geom name="geom_0.1" type="capsule" fromto="-0.0 -0.0 1.493559636811174 0.0 0.0 -1.493559636811174" size="0.01" rgba="0.75 0.75 0.75 1.0" density="159.15494309189535"/>
                 <site name="site_0.1" pos="0 0 0" quat="0.7071067811865476 -0.0 0.7071067811865475 0.0"/>
-                <joint name="joint_Base=rod_0.1" pos="-0.0 -0.0 0.15" range="-45 45"/>
-                <body name="p0" pos="-0.0 -0.0 0.15">
+                <joint name="joint_Base=rod_0.1" pos="-0.0 -0.0 1.493559636811174" range="-45 45"/>
+                <body name="p0" pos="-0.0 -0.0 1.493559636811174">
                     <geom type="sphere" size="0.011000000000000001" rgba="0.5 0.1 0.1 1.0" density="23873.2414637843"/>
                     <site name="p0"/>
                 </body>
-                <body name="rod_1.2" pos="0.0 0.0 -0.25">
-                    <geom name="geom_1.2" type="capsule" fromto="-0.0 -0.0 0.1 0.0 0.0 -0.1" size="0.01" rgba="0.75 0.75 0.75 1.0" density="159.15494309189535"/>
+                <body name="rod_1.2" pos="0.0 0.0 -2.989740536311918">
+                    <geom name="geom_1.2" type="capsule" fromto="-0.0 -0.0 1.4961808995007437 0.0 0.0 -1.4961808995007437" size="0.01" rgba="0.75 0.75 0.75 1.0" density="159.15494309189535"/>
                     <site name="site_1.2" pos="0 0 0" quat="0.7071067811865476 -0.0 0.7071067811865475 0.0"/>
-                    <joint name="joint_rod_0.1=rod_1.2" pos="-0.0 -0.0 0.1" range="-150 0"/>
-                    <body name="p1" pos="-0.0 -0.0 0.1">
+                    <joint name="joint_rod_0.1=rod_1.2" pos="-0.0 -0.0 1.4961808995007437" range="-150 0"/>
+                    <body name="p1" pos="-0.0 -0.0 1.4961808995007437">
                         <geom type="sphere" size="0.011000000000000001" rgba="0.5 0.1 0.1 1.0" density="23873.2414637843"/>
                         <site name="p1"/>
                     </body>
-                    <body name="rod_2.3" pos="0.05 -0.012500000000000004 -0.1">
-                        <geom name="geom_2.3" type="capsule" fromto="-0.05 0.012500000000000004 -0.0 0.05 -0.012500000000000004 0.0" size="0.01" rgba="0.75 0.75 0.75 1.0" density="159.15494309189535"/>
-                        <site name="site_2.3" pos="0 0 0" quat="0.992507556682903 0.0 0.0 -0.12218326369570473"/>
-                        <body name="rod_3.4" pos="0.05 0.017499999999999995 0.0">
+                    <body name="rod_2.3" pos="0.5086792549549121 -0.012500000000000004 -1.4961808995007437">
+                        <geom name="geom_2.3" type="capsule" fromto="-0.5086792549549121 0.012500000000000004 -0.0 0.5086792549549121 -0.012500000000000004 0.0" size="0.01" rgba="0.75 0.75 0.75 1.0" density="159.15494309189535"/>
+                        <site name="site_2.3" pos="0 0 0" quat="0.9999245495669603 0.0 0.0 -0.01228393964945758"/>
+                        <body name="rod_3.4" pos="0.5086792549549121 0.017499999999999995 0.0">
                             <geom name="geom_3.4" type="capsule" fromto="-0.0 -0.03 -0.0 0.0 0.03 0.0" size="0.01" rgba="0.75 0.75 0.75 1.0" density="159.15494309189535"/>
                             <site name="site_3.4" pos="0 0 0" quat="0.7071067811865476 0.0 0.0 0.7071067811865475"/>
                         </body>
                     </body>
                 </body>
             </body>
-            <body name="rod_5.6" pos="0.0 0.05 -0.15">
-                <geom name="geom_5.6" type="capsule" fromto="-0.0 -0.0 0.15 0.0 0.0 -0.15" size="0.01" rgba="0.75 0.75 0.75 1.0" density="159.15494309189535"/>
+            <body name="rod_5.6" pos="0.0 0.05 -1.4999295985114531">
+                <geom name="geom_5.6" type="capsule" fromto="-0.0 -0.0 1.4999295985114531 0.0 0.0 -1.4999295985114531" size="0.01" rgba="0.75 0.75 0.75 1.0" density="159.15494309189535"/>
                 <site name="site_5.6" pos="0 0 0" quat="0.7071067811865476 -0.0 0.7071067811865475 0.0"/>
-                <joint name="joint_Base=rod_5.6" pos="-0.0 -0.0 0.15" range="-45 45"/>
-                <body name="p5" pos="-0.0 -0.0 0.15">
+                <joint name="joint_Base=rod_5.6" pos="-0.0 -0.0 1.4999295985114531" range="-45 45"/>
+                <body name="p5" pos="-0.0 -0.0 1.4999295985114531">
                     <geom type="sphere" size="0.011000000000000001" rgba="0.5 0.1 0.1 1.0" density="23873.2414637843"/>
                     <site name="p5"/>
                 </body>
-                <body name="rod_6.7" pos="0.0 0.0 -0.25">
-                    <geom name="geom_6.7" type="capsule" fromto="-0.0 -0.0 0.1 0.0 0.0 -0.1" size="0.01" rgba="0.75 0.75 0.75 1.0" density="159.15494309189535"/>
+                <body name="rod_6.7" pos="0.0 0.0 -1.772575504609471">
+                    <geom name="geom_6.7" type="capsule" fromto="-0.0 -0.0 0.272645906098018 0.0 0.0 -0.272645906098018" size="0.01" rgba="0.75 0.75 0.75 1.0" density="159.15494309189535"/>
                     <site name="site_6.7" pos="0 0 0" quat="0.7071067811865476 -0.0 0.7071067811865475 0.0"/>
-                    <joint name="joint_rod_5.6=rod_6.7" pos="-0.0 -0.0 0.1" range="-150 0"/>
-                    <body name="p6" pos="-0.0 -0.0 0.1">
+                    <joint name="joint_rod_5.6=rod_6.7" pos="-0.0 -0.0 0.272645906098018" range="-150 0"/>
+                    <body name="p6" pos="-0.0 -0.0 0.272645906098018">
                         <geom type="sphere" size="0.011000000000000001" rgba="0.5 0.1 0.1 1.0" density="23873.2414637843"/>
                         <site name="p6"/>
                     </body>
-                    <body name="rod_7.8" pos="0.05 0.012500000000000004 -0.1">
-                        <geom name="geom_7.8" type="capsule" fromto="-0.05 -0.012500000000000004 -0.0 0.05 0.012500000000000004 0.0" size="0.01" rgba="0.75 0.75 0.75 1.0" density="159.15494309189535"/>
-                        <site name="site_7.8" pos="0 0 0" quat="0.992507556682903 0.0 0.0 0.12218326369570473"/>
-                        <body name="rod_8.9" pos="0.05 -0.017499999999999995 0.0">
+                    <body name="rod_7.8" pos="1.4915991534278359 0.012500000000000004 -0.272645906098018">
+                        <geom name="geom_7.8" type="capsule" fromto="-1.4915991534278359 -0.012500000000000004 -0.0 1.4915991534278359 0.012500000000000004 0.0" size="0.01" rgba="0.75 0.75 0.75 1.0" density="159.15494309189535"/>
+                        <site name="site_7.8" pos="0 0 0" quat="0.9999912218132787 0.0 0.0 0.004190023435018112"/>
+                        <body name="rod_8.9" pos="1.4915991534278359 -0.017499999999999995 0.0">
                             <geom name="geom_8.9" type="capsule" fromto="-0.0 0.03 -0.0 0.0 -0.03 0.0" size="0.01" rgba="0.75 0.75 0.75 1.0" density="159.15494309189535"/>
                             <site name="site_8.9" pos="0 0 0" quat="0.7071067811865476 0.0 0.0 -0.7071067811865475"/>
                         </body>
