@@ -265,4 +265,21 @@ def default_setting(props=properties):
 
 
 if __name__ == "__main__":
-    print('hello')
+    # Example initialization code
+    ROOT_DIR = get_project_root()
+    
+    # Define example points and connectivity matrix
+    points = np.random.random((12, 3))  # Example with 12 points in 3D
+    connectivity_mat = np.zeros((12, 12))
+    # Add some connections
+    for i in range(11):
+        connectivity_mat[i, i+1] = np.inf
+    
+    joint_limits = [[-30, 30]]*8
+    joint_axis = [[0, 0, 1]]*8
+    
+    robot = AntRobot(points, connectivity_mat, joint_limits, joint_axis)
+    robot.xml = robot.define_robot()
+    robot.write_xml()
+    
+    print('Robot model created successfully')

@@ -93,13 +93,13 @@ class NSGAII_sol():
         for i in range(population_size):
             r0 = i
             while (r0 == i):
-                r0 = np.floor(np.random.random() * self.n_pop).astype(int)
+                r0 = np.floor(np.random.random() * len(self.x)).astype(int)
             r1 = r0
             while (r1 == r0 or r1 == i):
-                r1 = np.floor(np.random.random() * self.n_pop).astype(int)
+                r1 = np.floor(np.random.random() * len(self.x)).astype(int)
             r2 = r1
             while (r2 == r1 or r2 == r0 or r2 == i):
-                r2 = np.floor(np.random.random() * self.n_pop).astype(int)
+                r2 = np.floor(np.random.random() * len(self.x)).astype(int)
 
             jrand = np.floor(np.random.random() * population_size).astype(int)
 

@@ -46,54 +46,89 @@ class AntWorld(World):
                            ]
 
     def geno2pheno(self, genotype):
+        """
+        Converts genotype values to phenotype parameters (morphology and controller).
+        
+        The genotype is split into two parts:
+        - Body parameters: 8 parameters for leg segment lengths
+        - Control weights: Parameters for the neural network controller
+        
+        Each leg has two segments:
+        - Upper segment (leg): Controls the length from hip to knee
+        - Lower segment (ankle): Controls the length from knee to toe
+        
+        Genotype is mapped from [-1, 1] to produce leg lengths in range [0.1, 0.35].
+        """
+        # Split genotype into control weights and body parameters
         control_weights = genotype[-self.n_weights:]
-        body_params = (genotype[:-self.n_weights] + 1.5) / 5 * 0.5 + 0.1
-        assert len(body_params) == 8
-        assert len(control_weights) == self.n_weights
-        assert not np.any(body_params <= 0)
-
+        
+        # Map body parameters from [-1, 1] to a reasonable range for leg lengths [0.1, 0.35]
+        # Add flexibility to allow slightly different ranges for different leg parts
+        leg_params_raw = genotype[:-self.n_weights]
+        
+        # Create different scaling factors for upper and lower leg segments
+        # This allows more diversity in morphology
+        upper_leg_scale = 0.12  # Range will be [0.1, 0.34]
+        lower_leg_scale = 0.10  # Range will be [0.1, 0.30]
+        
+        # Apply different scaling to different leg parts
+        body_params = np.zeros(8)
+        # Upper leg segments (even indices)
+        body_params[0::2] = (leg_params_raw[0::2] + 1) * upper_leg_scale + 0.1
+        # Lower leg segments (odd indices)
+        body_params[1::2] = (leg_params_raw[1::2] + 1) * lower_leg_scale + 0.1
+        
+        # Validate parameters
+        assert len(body_params) == 8, "Expected 8 body parameters"
+        assert len(control_weights) == self.n_weights, f"Expected {self.n_weights} control weights"
+        assert not np.any(body_params <= 0), "All leg segments must have positive length"
+        
+        # Configure neural network weights
         self.controller.geno2pheno(control_weights)
 
-        front_left_leg, front_left_ankle, front_right_leg, front_right_ankle, back_left_leg, back_left_ankle, back_right_leg, back_right_ankle, = body_params
-
-        # Define the 3D coordinates of the relative tree structure
-        front_left_hip_xyz = np.array([0.2, 0.2, 0])
-        front_left_knee_xyz = np.array(
-            [np.sqrt(0.5 * front_left_leg ** 2), np.sqrt(0.5 * front_left_leg ** 2), 0]) + front_left_hip_xyz
-        front_left_toe_xyz = np.array(
-            [np.sqrt(0.5 * front_left_ankle ** 2), np.sqrt(0.5 * front_left_ankle ** 2), 0]) + front_left_knee_xyz
-
-        front_right_hip_xyz = np.array([-0.2, 0.2, 0])
-        front_right_knee_xyz = np.array(
-            [-np.sqrt(0.5 * front_right_leg ** 2), np.sqrt(0.5 * front_right_leg ** 2), 0]) + front_right_hip_xyz
-        front_right_toe_xyz = np.array(
-            [-np.sqrt(0.5 * front_right_ankle ** 2), np.sqrt(0.5 * front_right_ankle ** 2), 0]) + front_right_knee_xyz
-
-        back_left_hip_xyz = np.array([-0.2, -0.2, 0])
-        back_left_knee_xyz = np.array(
-            [-np.sqrt(0.5 * back_left_leg ** 2), -np.sqrt(0.5 * back_left_leg ** 2), 0]) + back_left_hip_xyz
-        back_left_toe_xyz = np.array(
-            [-np.sqrt(0.5 * back_left_ankle ** 2), -np.sqrt(0.5 * back_left_ankle ** 2), 0]) + back_left_knee_xyz
-
-        back_right_hip_xyz = np.array([0.2, -0.2, 0])
-        back_right_knee_xyz = np.array(
-            [np.sqrt(0.5 * back_right_leg ** 2), -np.sqrt(0.5 * back_right_leg ** 2), 0]) + back_right_hip_xyz
-        back_right_toe_xyz = np.array(
-            [np.sqrt(0.5 * back_right_ankle ** 2), -np.sqrt(0.5 * back_right_ankle ** 2), 0]) + back_right_knee_xyz
-
-        points = np.vstack([front_left_hip_xyz,
-                            front_left_knee_xyz,
-                            front_left_toe_xyz,
-                            front_right_hip_xyz,
-                            front_right_knee_xyz,
-                            front_right_toe_xyz,
-                            back_left_hip_xyz,
-                            back_left_knee_xyz,
-                            back_left_toe_xyz,
-                            back_right_hip_xyz,
-                            back_right_knee_xyz,
-                            back_right_toe_xyz,
-                            ])
+        # Unpack body parameters
+        front_left_leg, front_left_ankle, front_right_leg, front_right_ankle, \
+        back_left_leg, back_left_ankle, back_right_leg, back_right_ankle = body_params
+        
+        # Calculate leg positions with more natural alignment
+        # Hip positions are fixed at the corners of a square
+        hip_offset = 0.2  # Distance from center to hip joint
+        
+        # Front Left Leg
+        front_left_hip_xyz = np.array([hip_offset, hip_offset, 0])
+        # Direction vector for front left leg (45 degrees)
+        front_left_dir = np.array([1, 1, 0]) / np.sqrt(2)
+        front_left_knee_xyz = front_left_hip_xyz + front_left_dir * front_left_leg
+        front_left_toe_xyz = front_left_knee_xyz + front_left_dir * front_left_ankle
+        
+        # Front Right Leg
+        front_right_hip_xyz = np.array([-hip_offset, hip_offset, 0])
+        # Direction vector for front right leg (135 degrees)
+        front_right_dir = np.array([-1, 1, 0]) / np.sqrt(2)
+        front_right_knee_xyz = front_right_hip_xyz + front_right_dir * front_right_leg
+        front_right_toe_xyz = front_right_knee_xyz + front_right_dir * front_right_ankle
+        
+        # Back Left Leg
+        back_left_hip_xyz = np.array([-hip_offset, -hip_offset, 0])
+        # Direction vector for back left leg (225 degrees)
+        back_left_dir = np.array([-1, -1, 0]) / np.sqrt(2)
+        back_left_knee_xyz = back_left_hip_xyz + back_left_dir * back_left_leg
+        back_left_toe_xyz = back_left_knee_xyz + back_left_dir * back_left_ankle
+        
+        # Back Right Leg
+        back_right_hip_xyz = np.array([hip_offset, -hip_offset, 0])
+        # Direction vector for back right leg (315 degrees)
+        back_right_dir = np.array([1, -1, 0]) / np.sqrt(2)
+        back_right_knee_xyz = back_right_hip_xyz + back_right_dir * back_right_leg
+        back_right_toe_xyz = back_right_knee_xyz + back_right_dir * back_right_ankle
+        
+        # Stack all points for the robot geometry
+        points = np.vstack([
+            front_left_hip_xyz, front_left_knee_xyz, front_left_toe_xyz,
+            front_right_hip_xyz, front_right_knee_xyz, front_right_toe_xyz,
+            back_left_hip_xyz, back_left_knee_xyz, back_left_toe_xyz,
+            back_right_hip_xyz, back_right_knee_xyz, back_right_toe_xyz,
+        ])
 
         # define the type of connections [FIXED ARCHITECTURE]
         connectivity_mat = np.array(
@@ -169,23 +204,85 @@ class AntWorld(World):
 
 
 def run_EA_single(ea_single, world):
+    from concurrent.futures import ProcessPoolExecutor
+    import multiprocessing
+    
+    # Determine optimal number of workers based on CPU count
+    max_workers = min(multiprocessing.cpu_count(), 8)
+    print(f"Starting single-objective optimization with {ea_single.n_gen} generations using {max_workers} parallel workers...")
+    
+    # Helper function for parallel evaluation
+    def evaluate_single_individual(idx_genotype):
+        idx, genotype = idx_genotype
+        fit_ind, _ = world.evaluate_individual(genotype)
+        return idx, fit_ind
+    
     for gen in range(ea_single.n_gen):
+        print(f"Generation {gen+1}/{ea_single.n_gen}...")
         pop = ea_single.ask()
         fitnesses_gen = np.empty(len(pop))
-        for index, genotype in enumerate(pop):
-            fit_ind, _ = world.evaluate_individual(genotype)
-            fitnesses_gen[index] = fit_ind
+        
+        # Create index-genotype pairs for tracking results
+        indexed_pop = list(enumerate(pop))
+        
+        # Parallel evaluation
+        with ProcessPoolExecutor(max_workers=max_workers) as executor:
+            results = list(executor.map(evaluate_single_individual, indexed_pop))
+            
+            # Process results in the order they complete
+            completed = 0
+            for idx, fitness in results:
+                fitnesses_gen[idx] = fitness
+                completed += 1
+                if completed % 10 == 0 or completed == len(pop):
+                    print(f"  Evaluated {completed}/{len(pop)} individuals")
+        
         ea_single.tell(pop, fitnesses_gen)
+        print(f"  Best fitness in generation {gen+1}: {ea_single.f_best_so_far}")
+    
+    print(f"Single-objective optimization completed!")
+    print(f"Best overall fitness: {ea_single.f_best_so_far}")
 
 
 def run_EA_multi(ea_multi, world):
+    from concurrent.futures import ProcessPoolExecutor
+    import multiprocessing
+    
+    # Determine optimal number of workers based on CPU count
+    max_workers = min(multiprocessing.cpu_count(), 8)
+    print(f"Starting multi-objective optimization with {ea_multi.n_gen} generations using {max_workers} parallel workers...")
+    
+    # Helper function for parallel evaluation
+    def evaluate_multi_individual(idx_genotype):
+        idx, genotype = idx_genotype
+        _, fit_ind = world.evaluate_individual(genotype)
+        return idx, fit_ind
+    
     for gen in range(ea_multi.n_gen):
+        print(f"Generation {gen+1}/{ea_multi.n_gen}...")
         pop = ea_multi.ask()
         fitnesses_gen = np.empty((len(pop), 2))
-        for index, genotype in enumerate(pop):
-            _, fit_ind = world.evaluate_individual(genotype)
-            fitnesses_gen[index] = fit_ind
+        
+        # Create index-genotype pairs for tracking results
+        indexed_pop = list(enumerate(pop))
+        
+        # Parallel evaluation
+        with ProcessPoolExecutor(max_workers=max_workers) as executor:
+            results = list(executor.map(evaluate_multi_individual, indexed_pop))
+            
+            # Process results in the order they complete
+            completed = 0
+            for idx, fitness in results:
+                fitnesses_gen[idx] = fitness
+                completed += 1
+                if completed % 10 == 0 or completed == len(pop):
+                    print(f"  Evaluated {completed}/{len(pop)} individuals")
+        
         ea_multi.tell(pop, fitnesses_gen)
+        print(f"  Number of solutions in Pareto front: {len(ea_multi.pareto_front)}")
+    
+    print(f"Multi-objective optimization completed!")
+    print(f"Number of solutions in final Pareto front: {len(ea_multi.pareto_front)}")
 
 
 def generate_best_individual_video(world, video_name: str = 'EvoRob3_video.mp4'):

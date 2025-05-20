@@ -280,7 +280,7 @@ if __name__ == "__main__":
     tensegrity.append(test.define_contacts())
     test.xml = tensegrity
     test.write_xml()
-    world = xml.parse(os.path.join(ROOT_DIR, 'src', 'World', 'Robot', 'assets', "walker_world.xml"))
+    world = xml.parse(os.path.join(ROOT_DIR, 'src', 'world', 'robot', 'assets', "walker_world.xml"))
     robot_env = world.getroot()
     # robot_env.attrib
     robot_env.append(xml.Element("include", attrib={"file": "PassiveWalkerRobot.xml"}))

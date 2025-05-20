@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class World:
+class World(ABC):
 
     @abstractmethod
     def evaluate_individual(self, genotype) -> float:
